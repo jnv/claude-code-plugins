@@ -1,0 +1,10 @@
+{
+  "name": "context-king",
+  "version": "0.0.0",
+  "description": "Semantic code navigation (ck): find-files, signatures, symbol/refs, method-source, and indexing for large codebases.",
+  "author": {
+    "name": "Jan Vlnas"
+  },
+  "homepage": "https://github.com/Fredrik-C/ContextKing",
+  "license": "MIT"
+}

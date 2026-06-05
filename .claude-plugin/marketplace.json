@@ -1,0 +1,14 @@
+{
+  "name": "jnv-plugins",
+  "owner": {
+    "name": "Jan Vlnas"
+  },
+  "description": "Jan Vlnas's Claude Code plugins.",
+  "plugins": [
+    {
+      "name": "context-king",
+      "source": "./plugins/context-king",
+      "description": "Semantic code navigation for large C#, TypeScript, Kotlin, and Python codebases (ContextKing / ck)."
+    }
+  ]
+}

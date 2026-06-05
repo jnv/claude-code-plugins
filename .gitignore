@@ -1,0 +1,3 @@
+# transient test output
+test/.tmp/
+*.tmp.*
