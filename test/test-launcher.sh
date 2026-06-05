@@ -15,6 +15,7 @@ echo "v9.9.9" > "$proot/UPSTREAM_VERSION"
 cat > "$proot/bin/ck-bootstrap.sh" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
+echo "BOOTSTRAP v=$1 rid=$2 target=$3" >&2
 target="$3"
 mkdir -p "$target/models/bge-small-en-v1.5"
 cat > "$target/ck" <<'INNER'
@@ -33,6 +34,8 @@ out="$(CLAUDE_PLUGIN_ROOT="$proot" CLAUDE_PLUGIN_DATA="$data" \
 assert_contains <(echo "$out") "RAN" "launcher execs bootstrapped binary"
 assert_contains <(echo "$out") "args=find-files hello" "args forwarded"
 assert_contains <(echo "$out") "$data/v9.9.9/models/bge-small-en-v1.5" "CK_MODEL_DIR set"
+assert_contains <(echo "$out") "v=v9.9.9" "bootstrap received version as first arg"
+assert_contains <(echo "$out") "target=$data/v9.9.9" "bootstrap received target as third arg"
 
 # Second call: binary present, bootstrap must NOT run again (remove stub to prove it).
 rm "$proot/bin/ck-bootstrap.sh"

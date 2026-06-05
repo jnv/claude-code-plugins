@@ -5,7 +5,9 @@ set -euo pipefail
 
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 DATA_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.cache/ck-plugin}"
-VERSION="$(cat "$PLUGIN_ROOT/UPSTREAM_VERSION")"
+VERSION="$(cat "$PLUGIN_ROOT/UPSTREAM_VERSION" 2>/dev/null)" \
+  || { echo "ck: cannot read $PLUGIN_ROOT/UPSTREAM_VERSION" >&2; exit 1; }
+[ -n "$VERSION" ] || { echo "ck: empty UPSTREAM_VERSION in $PLUGIN_ROOT" >&2; exit 1; }
 
 detect_rid() {
   local os arch
@@ -28,7 +30,11 @@ BIN="$TARGET_DIR/ck"
 
 if [ ! -x "$BIN" ]; then
   mkdir -p "$DATA_DIR"
-  LOCK="$DATA_DIR/.bootstrap.lock"   # mkdir-based lock (portable; macOS has no flock)
+  # mkdir-based lock (portable; macOS has no flock). Not version-scoped on
+  # purpose: only one bootstrap should write into DATA_DIR at a time. If a
+  # holder is killed the lock dir lingers; recover with:
+  #   rmdir "$DATA_DIR/.bootstrap.lock"
+  LOCK="$DATA_DIR/.bootstrap.lock"
   tries=0
   until mkdir "$LOCK" 2>/dev/null; do
     tries=$((tries + 1))
