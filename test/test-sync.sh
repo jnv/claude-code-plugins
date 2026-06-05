@@ -38,6 +38,7 @@ assert_file "$P/agents/explore.md" "agent copied"
 # Version pin + plugin.json bump
 assert_contains "$P/UPSTREAM_VERSION" "v9.9.9" "UPSTREAM_VERSION pinned"
 assert_contains "$P/.claude-plugin/plugin.json" "\"version\": \"9.9.9\"" "plugin.json version bumped"
+jq -e . "$P/.claude-plugin/plugin.json" >/dev/null && echo "  ok: plugin.json still valid json" || { echo "  FAIL: plugin.json invalid after bump"; FAILED=1; }
 # checksums.txt: 4 lines matching fixture hashes
 assert_eq "$(wc -l < "$P/checksums.txt" | tr -d ' ')" "4" "four checksums"
 want="$(sha_of "$rel/v9.9.9/context-king-linux-x64.tar.gz")"

@@ -28,6 +28,7 @@ fi
 [ -n "$VERSION" ] || { echo "could not resolve version" >&2; exit 1; }
 echo "Syncing context-king plugin to $VERSION" >&2
 
+# win-x64 intentionally excluded: the plugin targets macOS + Linux in v1.
 RIDS="osx-arm64 osx-x64 linux-x64 linux-arm64"
 HOOKS="ck-bash-guard.sh ck-read-guard.sh ck-search-guard.sh ck-scope-hint.sh ck-postsession.sh agent-usage-guard.sh"
 
@@ -49,6 +50,9 @@ rm -f "$PLUGIN/hooks/"*.sh
 for h in $HOOKS; do cp -a "$SRC/hooks/$h" "$PLUGIN/hooks/$h"; done
 
 # Rewrite the bundled invocation path to the bare on-PATH command (idempotent).
+# Assumes upstream invokes ck via the bare ".claude/skills/ck/ck" form (true as
+# of the pinned release). An absolute "~/.claude/..." form would NOT be matched;
+# re-verify on version bumps if upstream changes how skills/hooks invoke ck.
 adapt_path() { local f="$1" t="$1.tmp.$$"; sed 's#\.claude/skills/ck/ck#ck#g' "$f" > "$t" && mv "$t" "$f"; }
 while IFS= read -r f; do adapt_path "$f"; done < <(find "$PLUGIN/skills" -name 'SKILL.md')
 for h in $HOOKS; do adapt_path "$PLUGIN/hooks/$h"; done
