@@ -1,6 +1,6 @@
 {
   "name": "context-king",
-  "version": "0.0.0",
+  "version": "1.8.8",
   "description": "Semantic code navigation (ck): find-files, signatures, symbol/refs, method-source, and indexing for large codebases.",
   "author": {
     "name": "Jan Vlnas"

@@ -1,0 +1,4 @@
+f60e91f82f4cefd970ecd31916e8f78fa9c5de93c45282e0cedbaf4a53aaeab4  context-king-osx-arm64.tar.gz
+4a803f701876b65747665ed9aae79aad256fe22db99f7abbbb931162f9d983e6  context-king-osx-x64.tar.gz
+a717c09986796c23d61085ef59c08b3de6fe1adf23155088cb95dd3286a4360c  context-king-linux-x64.tar.gz
+68ec83ed52dead3f71cdbd5a974e34c9f89f4971cfc74e0caeb68b738c5fd558  context-king-linux-arm64.tar.gz
