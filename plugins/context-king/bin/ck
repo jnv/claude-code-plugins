@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# ck launcher: resolve platform, lazily bootstrap the binary+model into the
+# plugin's persistent data dir, then exec the real binary. On the Bash PATH.
+set -euo pipefail
+
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+DATA_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.cache/ck-plugin}"
+VERSION="$(cat "$PLUGIN_ROOT/UPSTREAM_VERSION")"
+
+detect_rid() {
+  local os arch
+  case "$(uname -s)" in
+    Darwin) os=osx ;;
+    Linux)  os=linux ;;
+    *) echo "ck: unsupported OS: $(uname -s)" >&2; return 1 ;;
+  esac
+  case "$(uname -m)" in
+    arm64|aarch64) arch=arm64 ;;
+    x86_64|amd64)  arch=x64 ;;
+    *) echo "ck: unsupported arch: $(uname -m)" >&2; return 1 ;;
+  esac
+  printf '%s-%s\n' "$os" "$arch"
+}
+
+RID="$(detect_rid)"
+TARGET_DIR="$DATA_DIR/$VERSION"
+BIN="$TARGET_DIR/ck"
+
+if [ ! -x "$BIN" ]; then
+  mkdir -p "$DATA_DIR"
+  LOCK="$DATA_DIR/.bootstrap.lock"   # mkdir-based lock (portable; macOS has no flock)
+  tries=0
+  until mkdir "$LOCK" 2>/dev/null; do
+    tries=$((tries + 1))
+    [ "$tries" -gt 600 ] && { echo "ck: timed out waiting for bootstrap lock" >&2; exit 1; }
+    sleep 1
+  done
+  trap 'rmdir "$LOCK" 2>/dev/null || true' EXIT
+  if [ ! -x "$BIN" ]; then
+    "$PLUGIN_ROOT/bin/ck-bootstrap.sh" "$VERSION" "$RID" "$TARGET_DIR"
+  fi
+  rmdir "$LOCK" 2>/dev/null || true
+  trap - EXIT
+fi
+
+export CK_MODEL_DIR="$TARGET_DIR/models/bge-small-en-v1.5"
+exec "$BIN" "$@"
