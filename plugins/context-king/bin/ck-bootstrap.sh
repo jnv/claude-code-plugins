@@ -26,7 +26,7 @@ stage="$(mktemp -d)"
 trap 'rm -rf "$tmp" "$stage"' EXIT
 
 echo "ck: downloading $ARCHIVE ($VERSION)..." >&2
-curl -fSL --retry 3 -o "$tmp/$ARCHIVE" "$URL"
+curl -fSL --retry 3 --progress-bar -o "$tmp/$ARCHIVE" "$URL"
 
 want="$(awk -v f="$ARCHIVE" '$2 == f {print $1}' "$PLUGIN_ROOT/checksums.txt")"
 [ -n "$want" ] || { echo "ck: no checksum for $ARCHIVE in checksums.txt" >&2; exit 1; }
@@ -46,6 +46,7 @@ cp -a "$src/models/bge-small-en-v1.5" "$stage/models/"
 chmod +x "$stage/ck"
 
 mkdir -p "$(dirname "$TARGET_DIR")"
+# clean up a leftover .partial from a previous run interrupted mid-publish
 rm -rf "$TARGET_DIR.partial"
 mv "$stage" "$TARGET_DIR.partial"
 mv "$TARGET_DIR.partial" "$TARGET_DIR"
