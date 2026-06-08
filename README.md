@@ -1,6 +1,7 @@
-# jnv/claude-code-plugins
+# My Claude Code plugins
 
-Personal [Claude Code](https://code.claude.com) plugin marketplace.
+> [!CAUTION]
+> This repo is for personal purpose and its contents may change, break, delete your data or eat your breakfast without prior warning. Use at your own risk – or not at all.
 
 ## Install
 
