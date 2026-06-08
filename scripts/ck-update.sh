@@ -22,8 +22,9 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "$VERSION" ]; then
+  command -v jq >/dev/null 2>&1 || { echo "jq is required to auto-detect the latest version; install it or pass --version" >&2; exit 1; }
   VERSION="$(curl -fsSL "https://api.github.com/repos/${UPSTREAM_REPO}/releases/latest" \
-    | awk -F'"' '/"tag_name"/ {print $4; exit}')"
+    | jq -r '.tag_name')"
 fi
 [ -n "$VERSION" ] || { echo "could not resolve version" >&2; exit 1; }
 echo "Syncing context-king plugin to $VERSION" >&2
