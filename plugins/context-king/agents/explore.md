@@ -11,7 +11,7 @@ When Context King is initialized in the repo (`.ck.json` present), use `bash` wi
 
 ```
 ck get-keyword-map --query "<user query terms>"       ← ALWAYS FIRST
-ck find-files --query "<refined terms from step 0>"   ← ALWAYS SECOND
+ck find-files --query "<refined terms from step 0>" --task "<task intent>"   ← ALWAYS SECOND
 ```
 
 Never skip these two steps before grep/rg/find/glob or broad exploration. Never jump straight to `ck signatures` or `ck expand-folder` without establishing scope first.
@@ -31,7 +31,7 @@ or a targeted CK read for that same file (`ck get-method-source`, `ck get-type-s
 
 ```
 0. ck get-keyword-map --query "..."            → extract precision keywords (search path)
-1. ck find-files --query "..."                 → establish folder scope (search path)
+1. ck find-files --query "..." --task "..."    → establish folder scope (search path)
 2. ck expand-folder --pattern "<kw>" <folder>  → explore (preferred when you have a keyword)
    ck signatures <folder>/                     → when no keyword; smart-ranked for large folders
    grep -rn "<kw>" <folder>/                   → allowed freely within scoped folders only
@@ -46,7 +46,7 @@ or a targeted CK read for that same file (`ck get-method-source`, `ck get-type-s
    ck get-enum-members <file> <EnumName>
    ck read-full-file <file>                     → first choice for known-file tasks; otherwise only when full-file context is truly needed
 5. [return findings]
-6. ck learn                                    → MUST run if any CK tool was used
+6. ck learn                                    → OPTIONAL — only for a durable, non-obvious conclusion (often skip)
 ```
 
 ## Rules
@@ -58,5 +58,5 @@ or a targeted CK read for that same file (`ck get-method-source`, `ck get-type-s
 - grep/rg/find are allowed only within folders returned by `ck find-files`. Never from repo root.
 - Never repeat identical `ck find-files` or `ck expand-folder` calls unchanged.
 - After 3 `ck expand-folder` calls with no match, stop expanding and re-scope.
-- `ck learn` is mandatory at the end if any CK tool was used. Record routing logic and cross-module dependencies — not implementation details.
+- `ck learn` is optional, not mandatory. Run it only when the session yielded a durable, non-obvious conclusion that a future engineer could not get by reading the code (routing logic, cross-module dependencies, the WHY behind a decision). Never use it to describe the changes made — that is a changelog, not knowledge. Skipping it is the common, correct outcome.
 - CK binary: use the path written into this agent's config by the installer.
