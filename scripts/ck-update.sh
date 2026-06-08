@@ -58,6 +58,12 @@ adapt_path() { local f="$1" t="$1.tmp.$$"; sed 's#\.claude/skills/ck/ck#ck#g' "$
 while IFS= read -r f; do adapt_path "$f"; done < <(find "$PLUGIN/skills" -name 'SKILL.md')
 for h in $HOOKS; do adapt_path "$PLUGIN/hooks/$h"; done
 
+# adapt_path rewrites each hook via "sed > tmp; mv", which yields a fresh file
+# with umask-default perms (644) and drops the execute bit. The hooks must be
+# executable to run, so set it explicitly here rather than relying on the
+# upstream archive's mode (which adapt_path would clobber anyway).
+for h in $HOOKS; do chmod +x "$PLUGIN/hooks/$h"; done
+
 # Checksums of each per-platform archive.
 sha256_of() {
   if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{print $1}';
